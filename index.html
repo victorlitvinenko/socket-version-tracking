@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO example</title>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      .main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+      }
+      #version {
+        font-size: 38px;
+      }
+      #newVersionBtn {
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div id="version">1</div>
+      <button id="newVersionBtn">New Version</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      let currentVersion;
+
+      const newVersionBtn = document.getElementById("newVersionBtn");
+      const versionText = document.getElementById("version");
+
+      newVersionBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        socket.emit("new version", currentVersion + 1);
+      });
+
+      socket.on("current version", (version) => {
+        currentVersion = version;
+        versionText.innerHTML = version;
+        console.log(version);
+      });
+    </script>
+  </body>
+</html>
