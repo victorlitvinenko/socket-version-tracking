@@ -1,30 +1,42 @@
-const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
+// const express = require("express");
+const fs = require("fs");
+// const app = express();
+// const server = http.createServer(app);
+const http = require("http");
+const server = http.createServer();
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
+// app.get('/', (req, res) => {
+//   res.sendFile(__dirname + '/index.html');
+// });
 
-let version = '7b4c2472';
+let version;
 
-io.on('connection', (socket) => {
-  console.log('a client connected');
-  io.emit('current version', version);
+try {
+  version = fs.readFileSync("./version.txt", { encoding: "utf8", flag: "r" }).trim();
+} catch (err) {
+  version = "initial";
+}
 
-  socket.on('disconnect', () => {
-    console.log('client disconnected');
+io.on("connection", (socket) => {
+  console.log("a client connected");
+  io.emit("current version", version);
+
+  socket.on("disconnect", () => {
+    console.log("client disconnected");
   });
 
-  socket.on('new version', (newVersion) => {
-    version = newVersion;
-    io.emit('current version', version);
-  });
+  // socket.on("new version", (newVersion) => {
+  //   version = newVersion;
+  //   fs.writeFileSync("./version.txt", version, {
+  //     encoding: "utf8",
+  //     flag: "w",
+  //   });
+  //   io.emit("current version", version);
+  // });
 });
 
 server.listen(5000, () => {
-  console.log('listening on *:5000');
+  console.log("listening on *:5000");
 });
